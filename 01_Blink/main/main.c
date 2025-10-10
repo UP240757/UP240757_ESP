@@ -11,12 +11,14 @@ void punto(void){
     vTaskDelay(pdMS_TO_TICKS(200)); // Esperamos 0.2 segundos
 
 }
+
 void raya(void){
     gpio_set_level(LED, 1); // Encendemos el LED
     vTaskDelay(pdMS_TO_TICKS(500)); // Esperamos 0.5 segundos
     gpio_set_level(LED, 0); // Apagamos el LED
     vTaskDelay(pdMS_TO_TICKS(500)); // Esperamos 0.5 segundos
 }
+
 void SOS()
 { 
     printf("SOS\n"); 
@@ -35,6 +37,7 @@ void SOS()
         punto();
     }
 }
+
 void app_main(void) // Función principal del programa
 {
     gpio_reset_pin(LED); // Reseteamos el pin del LED
@@ -42,10 +45,28 @@ void app_main(void) // Función principal del programa
 
     while (1) // Bucle infinito
     { 
+        gpio_reset_pin(BOTON);
+        gpio_set_direction(BOTON, GPIO_MODE_OUTPUT);
+        gpio_pullup_en(BOTON); // Activamos resistencia pull-up interna
+
+        int estadoAnterior = 1; // Boton suelto al inicio
+        while(1){
+            int estado = gpio_get_level(BOTON);
+            if(estado == 0 && estadoAnterior == 1){ // flancode bajada
+                SOS();
+        }
+
+        estadoAnterior = estado;
+        vTaskDelay(pdMS_TO_TICKS(50)); // debounce
+        }
+    }
         SOS();
+        
+        
+        
         vTaskDelay(pdMS_TO_TICKS(1000)); // Esperamos 2 segundos
     }
 }
 
 
-      
+
