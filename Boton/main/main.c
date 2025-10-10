@@ -3,8 +3,8 @@
 #include "freertos/FreeRTOS.h"
 
 // Definición de los pines para el LED y el botón
-#define LED    GPIO_NUM_2
-#define BUTTON GPIO_NUM_5
+#define LED    GPIO_NUM_15
+#define BUTTON GPIO_NUM_21
 
 void app_main(void)
 {
@@ -31,10 +31,12 @@ void app_main(void)
         if(status == false)
         {
             gpio_set_level(LED, 1); // Enciende el LED
+            printf("Prende\n");
         }
         else
         {
             gpio_set_level(LED, 0); // Apaga el LED
+            printf("Apaga\n");
         }
 
         // Espera 20 ms antes de repetir
