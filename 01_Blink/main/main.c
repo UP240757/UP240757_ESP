@@ -19,8 +19,8 @@ void raya(void){
     vTaskDelay(pdMS_TO_TICKS(500)); // Esperamos 0.5 segundos
 }
 
-void SOS()
-{ 
+void
+{  SOS()
     printf("SOS\n"); 
     for (int i = 0; i <3; i ++) // Tres puntos
     {

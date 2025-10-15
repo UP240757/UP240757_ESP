@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
+#include "esp_log.h"
 
 // Definición de los pines para el LED y el botón
 #define LED    GPIO_NUM_15
@@ -39,7 +40,52 @@ void SOS(){
         punto();
     }
 }
+bool doubleClick(void)
+{
+    const TickType_t debounceDelay = pdMS_TO_TICKS(50);
+    const TickType_t doubleClickTimeout = pdMS_TO_TICKS(400);
+    TickType_t startTime;
 
+    // Espera la primera pulsación
+    while (gpio_get_level(BUTTON) == 1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+
+    // Pequeño delay para debounce
+    vTaskDelay(debounceDelay);
+
+    // Verifica si se soltó el botón
+    while (gpio_get_level(BUTTON) == 0)
+    {
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+
+    // Marca el tiempo de la primera pulsación
+    startTime = xTaskGetTickCount();
+
+    // Espera la segunda pulsación dentro del tiempo permitido
+    while ((xTaskGetTickCount() - startTime) < doubleClickTimeout)
+    {
+
+        if (gpio_get_level(BUTTON) == 0)
+        {
+            // Espera a que se suelte el botón nuevamente
+            vTaskDelay(debounceDelay);
+            while (gpio_get_level(BUTTON) == 0)
+            {
+                vTaskDelay(pdMS_TO_TICKS(10));
+            }
+
+            ESP_LOGI("BUTTON", "Double click detected");
+            return true;
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(10)); // Evita WDT
+    }
+
+    return false; // No se detectó doble clic
+}
 void app_main(void)
 {
     // Reinicia la configuración de los pines LED y botón
