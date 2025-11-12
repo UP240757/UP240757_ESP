@@ -1,6 +1,7 @@
 #include "cabeceras.h"
 QTR8A sensor;
 uint16_t sensor_values[SENSOR_COUNT];
+uint16_t position;
 
 
 
@@ -77,7 +78,15 @@ esp_err_t calibrateSensor(void)
 }
 
 
+void getMAXMin(){
+    for(int i=0; i < SENSOR_COUNT; i++ )
+    printf("%d\t", sensor.calibrationOn.minimum[i]);
+    printf("\n");
+    for(int i= 0; i < SENSOR_COUNT; i++)
+    printf("%d\t", sensor.calibrationOn.maximum[i]);
+    printf("\n");
 
+}
 
 
 
@@ -88,5 +97,26 @@ extern "C" void app_main(void)
     createSensor();
 
 
-}
+    while(gpio_get_level(CAL) == 1) //Boton sin presionar
+    { vTaskDelay(pdMS_TO_TICKS(10));
+
+    }
+    calibrateSensor();
+
+    while (1){
+        position = sensor.readLineBlack(sensor_values);
+        for(int i= 0; i<SENSOR_COUNT; i++)
+         printf("%d\t", sensor_values[i]);
+        printf("P: %d\n", position);
+        vTaskDelay(pdMS_TO_TICKS(100));
+
+    }
+    
+    }
+    
+
+
+
+
+
 
