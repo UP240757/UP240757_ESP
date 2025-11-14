@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "QTR8A.h"
+#include "driver/ledc.h"
+
 
 
 
